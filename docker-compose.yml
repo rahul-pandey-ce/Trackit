@@ -1,0 +1,14 @@
+services:
+  trackit:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV=production
+    restart: always
+
+networks:
+  default:
+    name: trackit-network
