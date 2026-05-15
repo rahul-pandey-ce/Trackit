@@ -74,3 +74,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 Developed with ❤️ by the TrackIt Team.
+Tested CI/CD Auto Deployment! ??
