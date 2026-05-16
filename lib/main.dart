@@ -13,17 +13,11 @@ void main() async {
   debugPrint("TrackIt: App Starting...");
   
   try {
-    debugPrint("TrackIt: Checking Firebase apps...");
-    final apps = Firebase.apps;
-    debugPrint("TrackIt: Current apps: ${apps.length}");
-    
-    if (apps.isEmpty) {
-      debugPrint("TrackIt: Initializing Firebase with options...");
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      debugPrint("TrackIt: Firebase initialized successfully.");
-    }
+    debugPrint("TrackIt: Initializing Firebase with options...");
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    debugPrint("TrackIt: Firebase setup complete. Running App.");
     debugPrint("TrackIt: Firebase setup complete. Running App.");
   } catch (e, stack) {
     debugPrint("TrackIt: Error during initialization: $e");

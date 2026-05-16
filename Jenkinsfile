@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    environment {
+        // We define the image name we want to build
+        IMAGE_NAME = "trackit-web"
+        // Container name for Docker Compose
+        CONTAINER_NAME = "trackit-web"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // This step automatically pulls the latest code from the GitHub branch that triggered it
+                checkout scm
+                echo "Code checkout successful."
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Starting multi-stage Docker build for Flutter App..."
+                    // Execute the Docker build using the Dockerfile in the directory
+                    sh "docker build -t ${IMAGE_NAME}:latest ."
+                    echo "Docker image built successfully."
+                }
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                script {
+                    echo "Deploying newly built image to the container..."
+                    // 1. Stop and remove the existing running container to free the port
+                    sh "docker stop ${CONTAINER_NAME} || true"
+                    sh "docker rm ${CONTAINER_NAME} || true"
+                    
+                    // 2. We use docker compose up to bring the network and specific container back up
+                    sh "docker compose up -d trackit"
+                    
+                    // 3. Clear out old dangling images to save disk space
+                    sh "docker image prune -f"
+                    echo "Deployment Complete! TrackIt is Live."
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "CI/CD Pipeline succeeded! The application is live."
+        }
+        failure {
+            echo "CI/CD Pipeline failed! Check Jenkins logs."
+        }
+    }
+}
