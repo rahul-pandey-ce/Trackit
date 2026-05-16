@@ -94,9 +94,6 @@ services:
       - jenkins_data:/var/jenkins_home
       # Mount the Docker Socket so Jenkins can control building/running containers
       - /var/run/docker.sock:/var/run/docker.sock
-      # Mount docker CLI to allow Jenkins to issue docker commands directly
-      - /usr/bin/docker:/usr/bin/docker
-      - /usr/local/bin/docker-compose:/usr/local/bin/docker-compose
     restart: unless-stopped
     networks:
       - trackit-network
