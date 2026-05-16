@@ -36,8 +36,8 @@ pipeline {
                     sh "docker stop ${CONTAINER_NAME} || true"
                     sh "docker rm ${CONTAINER_NAME} || true"
                     
-                    // 2. We use docker compose up to bring the network and specific container back up
-                    sh "docker compose up -d trackit"
+                    // 2. We use docker compose up with --build to force a fresh build every time
+                    sh "docker compose up -d --build trackit"
                     
                     // 3. Clear out old dangling images to save disk space
                     sh "docker image prune -f"
