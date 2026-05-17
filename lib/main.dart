@@ -70,7 +70,7 @@ class TrackItApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'TRACKIT',
+      title: 'TRACKIT: Study Tracker',
       theme: ThemeData(
         fontFamily: 'Inter',
         useMaterial3: true,
