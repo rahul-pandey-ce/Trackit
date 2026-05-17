@@ -1,77 +1,74 @@
-# TrackIt - Study Session Monitoring System 📚🚀
+# 🚀 TrackIt: Professional DevOps & Monitoring Stack
 
-TrackIt is a Flutter application designed for students to track their study sessions and for viewers (such as parents or educators) to monitor their progress in real-time. Built with a robust Firebase backend, it provides a seamless experience for data-driven academic monitoring.
-
-## ✨ Features
-
-- **🔐 Dual Dashboard System:** Specialized interfaces for both Students and Viewers.
-- **📊 Interactive Analytics:** Visual representation of study habits using `fl_chart`.
-- **🔍 Student Search & Linking:** Viewers can search for students and request to monitor their progress.
-- **⚡ Real-time Updates:** Powered by Firebase Realtime Database for instant data synchronization.
-- **🔐 Secure Authentication:** User accounts managed via Firebase Authentication.
-- **📁 Session Management:** Detailed logging of study durations, subjects, and sessions.
-
-## 🛠️ Technology Stack
-
-- **Frontend:** [Flutter](https://flutter.dev/) (Dart)
-- **Backend:** [Firebase Authentication](https://firebase.google.com/docs/auth) & [Realtime Database](https://firebase.google.com/docs/database)
-- **State Management:** Provider/Hooks (common in Flutter, but specifically standard widgets here)
-- **Data Visualization:** [fl_chart](https://pub.dev/packages/fl_chart)
-- **Date/Time Formatting:** [intl](https://pub.dev/packages/intl)
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Flutter SDK (>= 3.4.0)
-- Android Studio / VS Code with Flutter extension
-- Firebase project setup
-
-### Installation
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/your-username/trackit.git
-    cd trackit
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    flutter pub get
-    ```
-
-3.  **Firebase Configuration:**
-    - Place your `google-services.json` (Android) and `GoogleService-Info.plist` (iOS) in their respective directories.
-    - Run `flutterfire configure` if you have the FlutterFire CLI installed.
-
-4.  **Run the application:**
-    ```bash
-    flutter run
-    ```
-
-## 📸 Screenshots
-
-*(To be added - You can use screenshots of your Dashboards here)*
-
-| Student Dashboard | Viewer Dashboard |
-| :---: | :---: |
-| ![Dashboard](https://via.placeholder.com/200x400?text=Student+UI) | ![Viewer](https://via.placeholder.com/200x400?text=Viewer+UI) |
-
-## 📁 Project Structure
-
-```text
-lib/
-├── models/         # Data models (StudySession, etc.)
-├── screens/        # Main UI screens (Login, Student Dash, Viewer Dash)
-├── services/       # Firebase & Business logic (Auth, Study Services)
-├── utils/          # Constants and helper functions
-└── widgets/        # Reusable UI components
-```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+This project is a complete automated CI/CD and Monitoring infrastructure for the **TrackIt** Flutter Web Application. It uses industry-standard tools to ensure the app is built, deployed, and monitored automatically.
 
 ---
-Developed with ❤️ by the TrackIt Team.
-Tested CI/CD Auto Deployment! ??
+
+## 🛠️ Architecture Components
+1.  **Flutter Web App:** The core application served via NGINX.
+2.  **Jenkins:** The CI/CD "Brain" that automates builds and deployments.
+3.  **Prometheus:** Collects performance metrics from all services.
+4.  **Grafana:** Visualizes metrics in beautiful, real-time dashboards.
+5.  **cAdvisor:** Monitors container-level resource usage (CPU/RAM).
+6.  **Node Exporter:** Monitors host-level system metrics.
+
+---
+
+## 🚦 How to Start Everything
+
+### 1. Prerequisites
+*   **Docker Desktop:** Must be running.
+*   **Git:** Installed and configured.
+*   **Ngrok:** Needed for automatic GitHub Webhooks.
+
+### 2. Launch the Stack
+From the project root (`d:\TrackIt\trackit`), run:
+```bash
+docker compose up -d
+```
+*Wait 2-3 minutes for all services to wake up.*
+
+### 3. Access Your Services
+| Service | URL | Credentials |
+| :--- | :--- | :--- |
+| **🌍 Web App** | [http://localhost:8080](http://localhost:8080) | - |
+| **🏗️ Jenkins** | [http://localhost:8082](http://localhost:8082) | `admin` / `admin123` |
+| **📊 Grafana** | [http://localhost:3000](http://localhost:3000) | `admin` / `admin` |
+| **🔥 Prometheus** | [http://localhost:9090](http://localhost:9090) | - |
+| **📦 cAdvisor** | [http://localhost:8081](http://localhost:8081) | - |
+
+---
+
+## 🔄 How to Deploy Changes
+
+### Step 1: Automatic Deployment (The Pro Way)
+1.  Open a terminal and start Ngrok: `ngrok http 8082`.
+2.  Update your GitHub Repo Webhook with the NEW Ngrok URL + `/github-webhook/`.
+3.  Simply push your code:
+    ```bash
+    git add .
+    git commit -m "Your changes"
+    git push origin main
+    ```
+4.  **Jenkins will build and deploy automatically.**
+
+### Step 2: Manual Deployment
+If Ngrok is closed, you can always trigger a build manually:
+1.  Go to **Jenkins** -> **TrackIt-Deploy**.
+2.  Click **"Build Now"**.
+
+---
+
+## 📈 Monitoring & Analytics
+1.  **CPU/RAM Usage:** Open Grafana and import/view the **"Node Exporter Full"** dashboard (ID: 1860).
+2.  **Container Health:** Use the Prometheus targets page to ensure all services are "UP".
+
+---
+
+## 🔧 Troubleshooting
+*   **Changes not visible?** Flutter caches heavily. Use `Ctrl + F5` or Incognito mode.
+*   **Jenkins build failing?** Check "Console Output" for specific errors.
+*   **Containers not starting?** Run `docker compose ps` to see which one is failing.
+
+---
+**Maintained by:** Rahul Pandey (DevOps Engineer)
