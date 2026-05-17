@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    triggers {
+        // Poll SCM every minute for changes.
+        // This is pull-based and works perfectly on localhost without needing ngrok or public webhooks!
+        pollSCM('* * * * *')
+    }
+
     environment {
         // We define the image name we want to build
         IMAGE_NAME = "trackit-web"
