@@ -1,0 +1,37 @@
+# ===========================
+# TrackIt Web App — .gitignore
+# Stack: HTML / CSS / JS / Nginx / Docker
+# ===========================
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+*.log
+npm-debug.log*
+
+# Docker volumes (managed externally)
+# No build artifacts since we copy src directly
+
+# Firebase local emulator
+.firebase/
+firebase-debug.log
+firebaserc.bak
+
+# Environment secrets (never commit)
+.env
+.env.local
+.env.production

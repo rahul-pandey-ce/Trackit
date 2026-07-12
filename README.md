@@ -1,11 +1,11 @@
 # 🚀 TrackIt: Professional DevOps & Monitoring Stack
 
-This project is a complete automated CI/CD and Monitoring infrastructure for the **TrackIt** Flutter Web Application. It uses industry-standard tools to ensure the app is built, deployed, and monitored automatically.
+This project is a complete automated CI/CD and Monitoring infrastructure for the **TrackIt** Web Application. It uses industry-standard tools to ensure the app is built, deployed, and monitored automatically.
 
 ---
 
 ## 🛠️ Architecture Components
-1.  **Flutter Web App:** The core application served via NGINX.
+1.  **TrackIt Web App:** The core application served via NGINX.
 2.  **Jenkins:** The CI/CD "Brain" that automates builds and deployments.
 3.  **Prometheus:** Collects performance metrics from all services.
 4.  **Grafana:** Visualizes metrics in beautiful, real-time dashboards.
@@ -66,7 +66,7 @@ If Ngrok is closed, you can always trigger a build manually:
 ---
 
 ## 🔧 Troubleshooting
-*   **Changes not visible?** Flutter caches heavily. Use `Ctrl + F5` or Incognito mode.
+*   **Changes not visible?** Browsers cache heavily. Use `Ctrl + F5` or Incognito mode.
 *   **Jenkins build failing?** Check "Console Output" for specific errors.
 *   **Containers not starting?** Run `docker compose ps` to see which one is failing.
 

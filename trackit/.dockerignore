@@ -1,0 +1,23 @@
+# TrackIt Web App — .dockerignore
+# Only the web/ folder is needed by Dockerfile (COPY web /usr/share/nginx/html)
+
+# Git metadata
+.git
+.gitignore
+
+# Logs
+*.log
+
+# Editor files
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Monitoring configs are not part of the web image
+monitoring/
+
+# Root assets folder (images live in web/assets/)
+assets/

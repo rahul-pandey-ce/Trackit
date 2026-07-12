@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TrackIt: Professional Study Routine & Focus Stack">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="TrackIt">
+  <link rel="icon" type="image/png" href="favicon.png">
+  
+  <title>TRACKIT: study routine</title>
+
+  <!-- Google Fonts: Inter & Material Icons Rounded -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <!-- Firebase Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+  <!-- Chart.js for beautiful charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Styling -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="app-loading" class="loading-overlay hide">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="toast-notification hide"></div>
+
+  <!-- Main View Container -->
+  <main id="app-container">
+
+    <!-- 1. AUTH SCREEN -->
+    <section id="auth-screen" class="screen hide">
+      <div id="auth-bg" class="glass-bg"></div>
+      <div class="auth-card-container">
+        <!-- Logo -->
+        <div class="logo-container animate-pulse">
+          <span class="material-icons-round logo-icon">bolt</span>
+        </div>
+        <h1 id="auth-title">Welcome Back</h1>
+        <p id="auth-subtitle">Sign in to continue your focus</p>
+
+        <!-- Form Card -->
+        <div class="auth-card">
+          <form id="auth-form" onsubmit="event.preventDefault();">
+            
+            <div class="form-group hide" id="name-group">
+              <label for="reg-name"><span class="material-icons-round text-primary">person_outline</span> Full Name</label>
+              <input type="text" id="reg-name" placeholder="Full Name" autocomplete="name">
+            </div>
+
+            <div class="form-group">
+              <label for="login-email"><span class="material-icons-round text-primary">mail_outline</span> Email Address</label>
+              <input type="email" id="login-email" placeholder="Email Address" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+              <label for="login-password"><span class="material-icons-round text-primary">lock_outline</span> Password</label>
+              <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+            </div>
+
+            <!-- Role Selector -->
+            <div class="role-selector-container">
+              <div class="role-selector-pill">
+                <button type="button" class="role-btn active" data-role="student" id="role-student">Student</button>
+                <button type="button" class="role-btn" data-role="viewer" id="role-viewer">Viewer</button>
+              </div>
+            </div>
+
+            <button type="submit" id="auth-submit-btn" class="btn btn-primary btn-block">SIGN IN</button>
+          </form>
+        </div>
+
+        <button type="button" id="auth-toggle-btn" class="btn btn-text">
+          New here? <span class="text-primary font-bold">Create an account</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. STUDENT DASHBOARD SCREEN -->
+    <section id="student-screen" class="screen hide">
+      <div id="student-bg" class="glass-bg"></div>
+      <div class="container scrollable">
+        
+        <!-- Header -->
+        <header class="dashboard-header">
+          <h2 class="brand-title">Focus Hub</h2>
+          <div class="header-actions">
+            <button class="icon-btn" id="open-target-btn" title="Open Goal Settings">
+              <span class="material-icons-round">settings</span>
+            </button>
+            <button class="icon-btn text-danger" id="student-logout-btn" title="Log Out">
+              <span class="material-icons-round">logout</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Profile Card -->
+        <div class="dashboard-card profile-card">
+          <div class="profile-info">
+            <div class="avatar-border">
+              <div class="avatar bg-primary-light">
+                <span class="material-icons-round text-white">person</span>
+              </div>
+            </div>
+            <div class="profile-meta">
+              <span class="welcome-text">Welcome back,</span>
+              <div class="name-edit-row">
+                <h3 id="student-name" class="user-name">Focus Master</h3>
+                <button class="edit-btn" id="edit-name-btn">
+                  <span class="material-icons-round">edit</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <button class="u-badge cursor-pointer" id="copy-uid-btn">
+            <span class="material-icons-round index-icon">vpn_key</span>
+            <span id="display-uid">loading...</span>
+          </button>
+        </div>
+
+        <!-- Timer Section -->
+        <div class="timer-section">
+          <!-- Circular Timer -->
+          <div class="timer-circle-wrapper">
+            <div class="pulse-ring hide" id="timer-pulse"></div>
+            <div class="timer-circle">
+              <div class="timer-display" id="timer-display">0:00</div>
+              <div class="timer-status" id="timer-status">READY?</div>
+            </div>
+          </div>
+
+          <!-- Focus Button -->
+          <button id="focus-btn" class="btn-focus">
+            <span class="material-icons-round" id="focus-btn-icon">play_circle_filled</span>
+            <span id="focus-btn-text">START FOCUS</span>
+          </button>
+        </div>
+
+        <!-- Progress Card -->
+        <div class="dashboard-card">
+          <div class="progress-header">
+            <h4>Today's Progress</h4>
+            <span class="percentage-badge" id="progress-percent">0%</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+          </div>
+          <div class="progress-footer">
+            <span class="material-icons-round" id="progress-icon">flag</span>
+            <span id="progress-status-text">30m more to reach goal.</span>
+          </div>
+        </div>
+
+        <!-- Quote Card -->
+        <div class="dashboard-card quote-card">
+          <p id="motivational-quote" class="quote-text">Every big journey begins with small steps. Keep pushing!</p>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+          <div class="stats-header">
+            <h3>Statistics</h3>
+            <div class="stats-toggle-pill">
+              <button class="toggle-btn" data-view="Day">Day</button>
+              <button class="toggle-btn active" data-view="Week">Week</button>
+              <button class="toggle-btn" data-view="Month">Month</button>
+            </div>
+          </div>
+
+          <!-- Chart Area -->
+          <div class="dashboard-card chart-card">
+            <div id="chart-container">
+              <canvas id="stats-chart"></canvas>
+            </div>
+
+            <!-- Month Summary Grid -->
+            <div id="monthly-summary" class="summary-grid hide">
+              <div class="summary-item">
+                <span class="material-icons-round">timer</span>
+                <span class="summary-label">Total Focus</span>
+                <span class="summary-value" id="summary-total">0 h 0 m</span>
+              </div>
+              <div class="summary-item">
+                <span class="material-icons-round">analytics</span>
+                <span class="summary-label">Daily Avg</span>
+                <span class="summary-value" id="summary-avg">0 min</span>
+              </div>
+              <div class="summary-item">
+                <span class="material-icons-round">star_outline</span>
+                <span class="summary-label">Best Day</span>
+                <span class="summary-value" id="summary-best">N/A</span>
+              </div>
+              <div class="summary-item">
+                <span class="material-icons-round">calendar_today</span>
+                <span class="summary-label">Active Days</span>
+                <span class="summary-value" id="summary-active">0/30</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. VIEWER SEARCH SCREEN -->
+    <section id="viewer-search-screen" class="screen hide">
+      <div class="container flex-center">
+        <!-- Floating Back / Sign out Header -->
+        <header class="search-header">
+          <h2 class="search-title">Track a Student</h2>
+          <button class="icon-btn text-danger" id="viewer-logout-btn">
+            <span class="material-icons-round">logout</span>
+          </button>
+        </header>
+
+        <div class="search-container">
+          <div class="search-icon-container">
+            <span class="material-icons-round search-logo-icon">monitor_heart</span>
+          </div>
+          <h1>Monitor Progress</h1>
+          <p class="search-desc">
+            Enter the Unique ID provided by the student<br>to start monitoring their focus sessions.
+          </p>
+
+          <div class="search-form-card">
+            <div class="form-group select-none">
+              <label for="search-uid-input"><span class="material-icons-round text-primary">key</span> Student UID</label>
+              <input type="text" id="search-uid-input" placeholder="Enter Student UID" required>
+            </div>
+            <button id="search-uid-btn" class="btn btn-primary btn-block">START MONITORING</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. VIEWER DASHBOARD SCREEN -->
+    <section id="viewer-dashboard-screen" class="screen hide">
+      <div class="container scrollable">
+        
+        <!-- Header -->
+        <header class="viewer-header">
+          <div class="viewer-header-info">
+            <button class="icon-btn" id="viewer-back-btn">
+              <span class="material-icons-round">arrow_back</span>
+            </button>
+            <h2 id="viewer-title" class="brand-title">Student's Focus</h2>
+          </div>
+          <!-- Share Access Link button to view the page link -->
+          <button class="icon-btn text-primary" id="copy-access-link-btn" title="Copy shareable viewer link">
+            <span class="material-icons-round">share</span>
+          </button>
+        </header>
+
+        <!-- Live Status Card -->
+        <div class="dashboard-card live-status-card" id="live-card">
+          <div class="live-icon bg-status-idle" id="live-status-icon-container">
+            <span class="material-icons-round" id="live-status-icon">pause</span>
+          </div>
+          <div class="live-meta">
+            <span class="live-sub" id="live-status-sub">TAKING A BREAK</span>
+            <h3 class="live-title" id="live-status-title">Student is Idle</h3>
+          </div>
+        </div>
+
+        <!-- Large Progress Circle -->
+        <div class="dashboard-card progress-circle-card">
+          <div class="svg-progress-container">
+            <svg width="220" height="220" class="progress-svg">
+              <circle cx="110" cy="110" r="95" class="circle-bg"></circle>
+              <circle cx="110" cy="110" r="95" class="circle-fill" id="viewer-svg-fill"></circle>
+            </svg>
+            <div class="svg-circle-text">
+              <div id="viewer-timer-display" class="circle-timer">0:00</div>
+              <div id="viewer-timer-sub" class="circle-label">FOCUS TIME</div>
+            </div>
+          </div>
+          <h4 id="viewer-progress-header" class="progress-percent-title">0% of Daily Goal</h4>
+          <span id="viewer-progress-sub" class="progress-mins-sub">0 / 30 Minutes</span>
+        </div>
+
+        <!-- Quick Info Boxes -->
+        <div class="info-row">
+          <div class="info-box">
+            <span class="info-label">Status</span>
+            <span class="info-val font-bold" id="info-status">IDLE</span>
+          </div>
+          <div class="info-box">
+            <span class="info-label">Target</span>
+            <span class="info-val text-primary" id="info-target">30 Min</span>
+          </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+          <div class="stats-header">
+            <h3>Activity</h3>
+            <div class="stats-toggle-pill" id="viewer-stats-toggle">
+              <button class="toggle-btn" data-view="Day">Day</button>
+              <button class="toggle-btn active" data-view="Week">Week</button>
+              <button class="toggle-btn" data-view="Month">Month</button>
+            </div>
+          </div>
+
+          <!-- Chart Area -->
+          <div class="dashboard-card chart-card">
+            <div id="viewer-chart-container">
+              <canvas id="viewer-stats-chart"></canvas>
+            </div>
+
+            <!-- Month Summary Grid -->
+            <div id="viewer-monthly-summary" class="summary-grid hide">
+              <div class="summary-item">
+                <span class="material-icons-round">timer</span>
+                <span class="summary-label">Total Focus</span>
+                <span class="summary-value" id="viewer-summary-total">0 h 0 m</span>
+              </div>
+              <div class="summary-item">
+                <span class="material-icons-round">analytics</span>
+                <span class="summary-label">Daily Avg</span>
+                <span class="summary-value" id="viewer-summary-avg">0 min</span>
+              </div>
+              <div class="summary-item">
+                <span class="material-icons-round">star_outline</span>
+                <span class="summary-label">Best Day</span>
+                <span class="summary-value" id="viewer-summary-best">N/A</span>
+              </div>
+              <div class="summary-item">
+                <span class="material-icons-round">calendar_today</span>
+                <span class="summary-label">Active Days</span>
+                <span class="summary-value" id="viewer-summary-active">0/30</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 5. DIALOGS -->
+  <!-- Target picker bottom sheet / modal -->
+  <div id="target-modal" class="modal-overlay hide">
+    <div class="bottom-sheet">
+      <div class="bottom-sheet-handle"></div>
+      <h3>Daily Focus Goal</h3>
+      
+      <div class="target-display">
+        <span class="material-icons-round text-primary">timer</span>
+        <span id="target-modal-val">30 min</span>
+      </div>
+
+      <div class="slider-container">
+        <input type="range" id="target-slider" min="15" max="480" step="15" value="30">
+      </div>
+
+      <button id="save-target-btn" class="btn btn-primary btn-block">CONFIRM GOAL</button>
+    </div>
+  </div>
+
+  <!-- Name Edit Dialog -->
+  <div id="name-modal" class="modal-overlay hide">
+    <div class="dialog-box">
+      <h3>Your Name</h3>
+      <div class="form-group select-none">
+        <input type="text" id="name-input" placeholder="Enter your real name" required>
+      </div>
+      <div class="dialog-actions">
+        <button id="cancel-name-btn" class="btn btn-text text-grey">CANCEL</button>
+        <button id="save-name-btn" class="btn btn-primary">UPDATE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Javascript Logic -->
+  <script>
+    // Safety net: if app.js fails to hide spinner within 4s, force-hide it
+    setTimeout(function() {
+      var el = document.getElementById('app-loading');
+      if (el) el.classList.add('hide');
+    }, 4000);
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
